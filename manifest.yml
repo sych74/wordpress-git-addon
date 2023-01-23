@@ -54,9 +54,6 @@ actions:
           cdn-addon: ${settings.cdn-addon:false}
           mu-addon: false
           woocommerce: false
-          DB_USER: ${globals.db_user}
-          DB_PASS: ${globals.db_pass}
-          WP_ADMIN_PASS: ${globals.wp_admin_pass}
           success_email: false
           project: ${settings.project:default}
           projectScope: ${settings.projectScope:production}

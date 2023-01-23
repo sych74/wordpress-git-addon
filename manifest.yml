@@ -1,0 +1,109 @@
+type: update
+version: 1.7
+id: wordpress-deploy-from-git
+name: Git-Push-Deploy Add-On
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/git-push-deploy/master
+  
+settings:
+  fields:
+  - name: gitRepo
+    caption: Git Repo Url
+    type: string
+    default: ''
+    required: 'true'
+    regex: "^https?:\\/\\/.+$"
+    regexText: Incorrect URL. HTTPS link to Git repository is required.
+  - name: gitBranch
+    caption: Branch
+    type: string
+    default: master
+    required: 'true'
+  - name: gitUser
+    caption: User
+    type: string
+    default: ''
+    required: 'true'
+  - name: gitToken
+    caption: Token
+    type: string
+    default: ''
+    required: true
+
+globals:
+  scriptName: git-push-redeploy
+
+onInstall:
+  script: /scripts/check-deployment-type.cs?_r=${fn.random}
+  next: setup
+
+onBeforeDelete: delete-redeploy-script
+onUninstall: delete-redeploy-script
+  
+actions:
+  setup:
+    - if ('${this.addon}' == 'maven'): 
+      - if (!nodes.build): 
+          addNodes: 
+              cloudlets: 16
+              nodeGroup: build
+              nodeType: maven3
+              displayName: Build Node
+              groupDisplayName: Build Nodes
+              metadata:
+                layer: build
+      - add-build-project
+
+    - if ('${this.addon}' == 'vcs'): 
+        add-vcs-project:
+          type: ${this.type}
+        
+    - create-redeploy-script
+
+
+  create-redeploy-script:
+    script: /scripts/create-redeploy-script.cs?r_${fn.random}
+    url: ${baseUrl}/scripts/redeploy.cs
+    targetEnv: ${env.envName}
+    nodeGroup: cp
+    next: web-hook
+
+  web-hook:
+    script: /scripts/add-web-hook.cs?r_${fn.random}
+    params:
+      scriptName: ${globals.scriptName}
+      user: ${settings.gitUser}
+      repo: ${settings.gitRepo}
+      token: ${settings.gitToken}
+      callbackUrl: ${this.host}/${env.envName}-${globals.scriptName}?token=${this.token}&action=rebuild&appid=${this.appid}
+      envName: ${env.envName}
+      act: ${this.act}
+ 
+  add-vcs-project:
+    script: /scripts/add-vcs-project.cs?r_${fn.random}
+    params:
+      url: ${settings.gitRepo}
+      branch: ${settings.gitBranch}
+      user: ${settings.gitUser}
+      token: ${settings.gitToken}
+      type: ${this.type}
+      
+  add-build-project:
+    script: /scripts/add-build-project.cs?r_${fn.random}
+    params:
+      name: ${globals.scriptName}
+      url: ${settings.gitRepo}
+      branch: ${settings.gitBranch}
+      login: ${settings.gitUser}
+      password: ${settings.gitToken}
+      targetEnv: ${env.envName}
+      
+  delete-redeploy-script:
+    - jelastic.dev.scripting.DeleteScript:
+        name: ${env.envName}-${globals.scriptName}
+    - web-hook:
+        act: delete
+    - if (nodes.build): 
+        api: env.control.RemoveNode
+        nodeid: ${nodes.build.master.id}
+        
+success: /text/success.md

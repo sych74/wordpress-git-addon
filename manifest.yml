@@ -1,4 +1,4 @@
-type: update
+type: install
 version: 1.7
 id: wordpress-deploy-from-git
 name: WordPress-Deploy-From-Git Add-On
@@ -29,7 +29,39 @@ settings:
     default: ''
     required: true
 
-onInstall:
+globals:
+  env_name: ${settings.env_name:wp-[fn.random]}
+  project_name: ${settings.project_name:"stage"}
+  envGroups: ${settings.envGroups:"test"}
+  db_user: user-${fn.random}
+  db_pass: ${fn.password(10)}
 
+onInstall:
+  - createEnvironment
+  - deployWordPressFromGit
 
 actions:
+  createEnvironment:
+    - install:
+        jps: https://raw.githubusercontent.com/jelastic-jps/wordpress/v2.2.0/manifest.yml?_r=${fn.random}
+        envName: ${globals.env_name}
+        loggerName: ${globals.env_name}
+        settings:
+          ls-addon: true
+          waf: ${settings.waf:true}
+          wp_protect: ${settings.wp_protect:true}
+          le-addon: ${settings.le-addon:false}
+          cdn-addon: ${settings.cdn-addon:false}
+          mu-addon: false
+          woocommerce: false
+          DB_USER: ${globals.db_user}
+          DB_PASS: ${globals.db_pass}
+          WP_ADMIN_PASS: ${globals.wp_admin_pass}
+          success_email: false
+          project: ${settings.project:default}
+          projectScope: ${settings.projectScope:production}
+
+  deployWordPressFromGit:
+    log: deploy
+    
+    

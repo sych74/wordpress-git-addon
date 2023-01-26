@@ -6,28 +6,17 @@ baseUrl: https://raw.githubusercontent.com/sych74/wordpress-git-addon/main
   
 settings:
   fields:
-  - name: gitRepo
+  - name: gitRepoId
     caption: Git Repo Url
     type: string
     default: ''
-    required: 'true'
-    regex: "^https?:\\/\\/.+$"
+    required: 'false'
     regexText: Incorrect URL. HTTPS link to Git repository is required.
   - name: gitBranch
     caption: Branch
     type: string
     default: master
-    required: 'true'
-  - name: gitUser
-    caption: User
-    type: string
-    default: ''
-    required: 'true'
-  - name: gitToken
-    caption: Token
-    type: string
-    default: ''
-    required: true
+    required: 'false'
 
 globals:
   env_name: ${settings.env_name:wp-[fn.random]}
@@ -38,7 +27,9 @@ globals:
 
 onInstall:
   - createEnvironment
-  - deployWordPressFromGit
+  - removeDeployments
+  - backupConfigs
+  - deployFromGitRepo
 
 actions:
   createEnvironment:
@@ -56,7 +47,7 @@ actions:
           woocommerce: false
           success_email: false
           project: ${settings.project:default}
-          projectScope: ${settings.projectScope:production}
+          projectScope: ${settings.projectScope:staging}
 
   deployWordPressFromGit:
     log: deploy

@@ -70,6 +70,7 @@ actions:
         });
     
   removeContext:
-    - api: jelastic.env.deployment.undeploy
+    - api: jelastic.env.deployment.deploy
       nodeGroup: cp
+      envName: ${globals.env_name}
       context: ROOT

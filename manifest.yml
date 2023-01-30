@@ -28,6 +28,7 @@ onInstall:
   - backupConfigs
   - removeContext
   - deployContextById
+  - outputResult
 
 actions:
   createEnvironment:
@@ -78,3 +79,7 @@ actions:
       repo:
         id: ${settings.repoId}
         branch: ${settings.branch}
+        
+  outputResult:
+    script: |
+      return {result: 0, newEnvName: "${globals.env_name}", repoId: "${settings.repoId}", branch: "${settings.branch}"}

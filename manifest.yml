@@ -6,17 +6,16 @@ baseUrl: https://raw.githubusercontent.com/sych74/wordpress-git-addon/main
   
 settings:
   fields:
-  - name: gitRepoId
+  - name: repoID
     caption: Git Repo Url
     type: string
     default: ''
-    required: 'false'
-    regexText: Incorrect URL. HTTPS link to Git repository is required.
-  - name: gitBranch
+    required: 'true'
+  - name: branch
     caption: Branch
     type: string
     default: master
-    required: 'false'
+    required: 'true'
 
 globals:
   env_name: ${settings.env_name:wp-[fn.random]}
@@ -27,9 +26,9 @@ globals:
 
 onInstall:
   - createEnvironment
-  - removeDeployments
   - backupConfigs
-  - deployFromGitRepo
+  - removeDeployments
+  - deployContextById
 
 actions:
   createEnvironment:
@@ -75,7 +74,7 @@ actions:
       envName: ${globals.env_name}
       context: ROOT
 
-  deployContext:
+  deployContextById:
     - api: jelastic.env.deployment.deploy
       nodeGroup: cp
       envName: ${globals.env_name}

@@ -1,9 +1,8 @@
 type: install
 version: 1.7
 id: wordpress-deploy-from-git-by-id
-name: WordPress-Deploy-From-Git Add-On
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-git-addon/main
-  
+name: Deploy Wordpress From Git By ID Add-On
+
 settings:
   fields:
   - name: gitRepoId

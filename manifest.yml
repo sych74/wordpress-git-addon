@@ -74,3 +74,12 @@ actions:
       nodeGroup: cp
       envName: ${globals.env_name}
       context: ROOT
+
+  deployContext:
+    - api: jelastic.env.deployment.deploy
+      nodeGroup: cp
+      envName: ${globals.env_name}
+      context: ROOT
+      repo:
+        id: ${settings.repoId}
+        branch: ${settings.branch}

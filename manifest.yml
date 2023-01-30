@@ -69,3 +69,7 @@ actions:
           commandList: toJSON([{"command": cmd1}, {"command": cmd2}])
         });
     
+  removeContext:
+    - api: jelastic.env.deployment.undeploy
+      nodeGroup: cp
+      context: ROOT

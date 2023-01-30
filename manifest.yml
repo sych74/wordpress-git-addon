@@ -1,21 +1,22 @@
 type: install
 version: 1.7
-id: deploy-wordpress-from-git-by-id
-name: WordPress-Deploy-From-Git by ID Add-On
+id: wordpress-deploy-from-git-by-id
+name: WordPress-Deploy-From-Git Add-On
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-git-addon/main
   
 settings:
   fields:
-  - name: repoID
+  - name: gitRepoId
     caption: Git Repo Url
     type: string
     default: ''
-    required: 'true'
-  - name: branch
+    required: 'false'
+    regexText: Incorrect URL. HTTPS link to Git repository is required.
+  - name: gitBranch
     caption: Branch
     type: string
     default: master
-    required: 'true'
+    required: 'false'
 
 globals:
   env_name: ${settings.env_name:wp-[fn.random]}
@@ -27,7 +28,7 @@ globals:
 onInstall:
   - createEnvironment
   - backupConfigs
-  - removeDeployments
+  - removeContext
   - deployContextById
 
 actions:
@@ -47,9 +48,6 @@ actions:
           success_email: false
           project: ${settings.project:default}
           projectScope: ${settings.projectScope:staging}
-
-  deployWordPressFromGit:
-    log: deploy
     
   backupConfigs:
     - script: | 
@@ -69,7 +67,7 @@ actions:
         });
     
   removeContext:
-    - api: jelastic.env.deployment.deploy
+    - api: jelastic.env.deployment.undeploy
       nodeGroup: cp
       envName: ${globals.env_name}
       context: ROOT

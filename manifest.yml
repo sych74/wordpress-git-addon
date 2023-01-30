@@ -9,13 +9,12 @@ settings:
     caption: Git Repo Url
     type: string
     default: ''
-    required: 'false'
-    regexText: Incorrect URL. HTTPS link to Git repository is required.
+    required: 'true'
   - name: branch
     caption: Branch
     type: string
     default: master
-    required: 'false'
+    required: 'true'
 
 globals:
   env_name: ${settings.env_name:wp-[fn.random]}

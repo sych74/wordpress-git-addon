@@ -1,6 +1,6 @@
 type: install
 version: 1.7
-id: wordpress-deploy-from-git-by-id
+id: deploy-wordpress-from-git-by-id
 name: Deploy Wordpress From Git By ID Add-On
 
 settings:

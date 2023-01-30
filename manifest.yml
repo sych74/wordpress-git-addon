@@ -52,4 +52,20 @@ actions:
   deployWordPressFromGit:
     log: deploy
     
+  backupConfigs:
+    - script: | 
+        var envInfo = jelastic.env.control.GetEnvInfo('${globals.env_name}', session);
+        if (envInfo.result != 0) return envInfo;
+        for (var i = 0, k = envInfo.nodes; i < k.length; i++) {
+          if (k[i].nodeGroup == 'cp')
+            master_id = k[i].id;
+        }       
+        var cmd1 = "[ ! -d /var/www/webroot/backup ] && mkdir -p /var/www/webroot/backup";
+        var cmd2 = "[ -f /var/www/webroot/ROOT/wp-config.php ] && cp /var/www/webroot/ROOT/wp-config.php /var/www/webroot/backup";       
+        return api.environment.control.ExecCmdById({
+          envName: "${globals.env_name}", 
+          session: session,
+          nodeId: master_id, 
+          commandList: toJSON([{"command": cmd1}, {"command": cmd2}])
+        });
     

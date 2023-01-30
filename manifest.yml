@@ -5,13 +5,13 @@ name: Deploy Wordpress From Git By ID Add-On
 
 settings:
   fields:
-  - name: gitRepoId
+  - name: repoId
     caption: Git Repo Url
     type: string
     default: ''
     required: 'false'
     regexText: Incorrect URL. HTTPS link to Git repository is required.
-  - name: gitBranch
+  - name: branch
     caption: Branch
     type: string
     default: master
